@@ -14,9 +14,14 @@ class Symptom(BaseModel):
 
 
 class RelatedSymptom(BaseModel):
-    main_symptom_id = ForeignKeyField(Symptom)
-    related_symptom_id = ForeignKeyField(Symptom)
+    main_symptom_id = ForeignKeyField(Symptom, backref='main_symtom')
+    related_symptom_id = ForeignKeyField(Symptom, backref='related_symptom')
     rank = IntegerField()
+
+    class Meta:
+        indexes = (
+            (('main_symptom_id', 'related_symptom_id'), True),
+        )
 
 
 class Disease(BaseModel):
@@ -24,8 +29,8 @@ class Disease(BaseModel):
 
 
 class RelatedDisease(BaseModel):
-    main_symptom_id = ForeignKeyField(Symptom)
-    related_disease_id = ForeignKeyField(Disease)
+    main_symptom_id = ForeignKeyField(Symptom, backref='main_symptom')
+    related_disease_id = ForeignKeyField(Disease, backref='related_disease')
 
 
 def create_db():

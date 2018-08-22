@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 import json
 import os
 
@@ -6,11 +5,14 @@ from db_util import Symptom, RelatedSymptom, Disease, RelatedDisease
 
 
 def extract(json_obj):
+    ''' extract related symtoms and related diseases
+    '''
     main_symptom_names = json_obj['symptomNames']
     related_symptoms = json_obj['relatedSymptoms']
     related_diseases = json_obj['items']
 
     # print(related_symptoms)
+    # save the current querying symptoms
     for name in main_symptom_names:
         if len(Symptom.select().where(Symptom.name == name)) == 0:
             Symptom.create(name=name)
@@ -19,6 +21,7 @@ def extract(json_obj):
     for main_symptom in main_symptoms:
         # print(main_symptom.id, main_symptom.name)
 
+        # save the related symtoms
         for item in related_symptoms:
             if len(Symptom.select().where(Symptom.name == item['cfn'])) == 0:
                 Symptom.create(name=item['cfn'])
@@ -36,6 +39,7 @@ def extract(json_obj):
                 RelatedSymptom.create(**d)
             # break
 
+        # save the related diseases
         for item in related_diseases:
             title = item['title'][0]
             if len(Disease.select().where(Disease.title == title)) == 0:
@@ -61,6 +65,7 @@ def extract(json_obj):
 def main():
     base_dir = 'data_raw'
     filenames = os.listdir(base_dir)
+    filenames = sorted(filenames)
     for filename in filenames:
         with open(base_dir + '/' + filename, 'r') as f:
             json_obj = json.load(f)
@@ -68,6 +73,7 @@ def main():
             if 'symptomNames' not in json_obj:
                 continue
             extract(json_obj)
+            # break
     return
 
 
