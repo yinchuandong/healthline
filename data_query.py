@@ -1,3 +1,4 @@
+from __future__ import print_function
 from db_util import Symptom, RelatedSymptom, Disease, RelatedDisease
 
 
