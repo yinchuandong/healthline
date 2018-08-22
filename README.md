@@ -2,6 +2,11 @@ Healthline Demo
 ===============
 
 
+### dependencies
+run ``` pip install -r requirements.txt ```
+
+
+
 ### how to run (with python2.7 version)
 1. run ``` python db_util.py ``` to initialize a database
 2. run ``` python data_fetch.py ``` to download data from Healthline
