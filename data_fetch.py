@@ -21,8 +21,30 @@ def fetch_conditions(symptoms=['Dizziness'], replace=False):
 
 
 def main():
-    fetch_conditions(['Dizziness'])
-    fetch_conditions(['Dizziness', 'Shortness of Breath'])
+    # fetch_conditions(['Dizziness'])
+    # fetch_conditions(['Dizziness', 'Shortness of Breath'])
+    symptoms = ['Dizziness']
+    waiting_list = [['Dizziness']]
+    count = 0
+    while len(waiting_list) > 0:
+        count += 1
+        symptoms = waiting_list.pop(0)
+        # symptoms = sorted(symptoms)
+        symptoms = map(lambda s: s.lower().replace(' ', '-'), symptoms)
+        filename = 'data_raw/{}.json'.format('|'.join(symptoms))
+        print(count, filename)
+        # skip downloaded symptoms
+        if os.path.exists(filename):
+            continue
+        ret = fetch_conditions(symptoms)
+        if 'items' not in ret or len(ret['items']) <= 2:
+            continue
+
+        related_symptoms = ret['relatedSymptoms']
+        for s in related_symptoms:
+            waiting_list.append(symptoms + [str(s['cfn'])])
+        # break
+    print(waiting_list)
     return
 
 

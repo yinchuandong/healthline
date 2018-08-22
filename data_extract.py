@@ -44,7 +44,7 @@ def extract(json_obj):
 
             related_disease = Disease.get(Disease.title == title)
 
-            print(related_disease)
+            # print(related_disease)
             related_ret = RelatedDisease.select()\
                 .where(RelatedDisease.main_symptom_id == main_symptom.id) \
                 .where(RelatedDisease.related_disease_id == disease.id)
@@ -64,6 +64,9 @@ def main():
     for filename in filenames:
         with open(base_dir + '/' + filename, 'r') as f:
             json_obj = json.load(f)
+            print(filename)
+            if 'symptomNames' not in json_obj:
+                continue
             extract(json_obj)
     return
 
