@@ -1,20 +1,23 @@
 import requests
 import json
+import os
 
 
-def fetch_conditions(symptoms=['Dizziness']):
+def fetch_conditions(symptoms=['Dizziness'], replace=False):
     url = 'https://www.healthline.com/api/symptom-checker/conditions'
 
     def func(s):
         return s.lower().replace(' ', '-')
     form_data = map(func, symptoms)
+    filename = 'data_raw/{}.json'.format('|'.join(form_data))
+    if not replace and os.path.exists(filename):
+        return json.load(open(filename, 'r'))
     data = {"rows": 1000, "start": 0, "symptoms": form_data}
     rep = requests.post(url, json=data)
     result = rep.json()
-    filename = '|'.join(form_data)
-    with open('data_raw/{}.json'.format(filename), 'w') as f:
+    with open(filename, 'w') as f:
         json.dump(result, f, indent=2)
-    return
+    return result
 
 
 def main():
