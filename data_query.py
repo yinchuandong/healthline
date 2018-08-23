@@ -3,9 +3,9 @@ from db_util import Symptom, RelatedSymptom, Disease, RelatedDisease
 
 
 def select_related_symptoms(symptom_ids):
-    ''' 
+    ''' select all sypmtoms related to given symptom_ids
     Args:
-        symptom_ids: list of symptom ids that needs to query
+        symptom_ids: list of symptom ids that needs to query, e.g. [1, 2]
     Return:
         related_symptoms: list of (symptom_name, rank) pairs
     '''
@@ -25,7 +25,7 @@ def select_related_symptoms(symptom_ids):
 
 
 def select_related_diseases(symptom_id):
-    '''
+    ''' select all diseases related to given symptom_id
     Args:
         symptom_id: integer, the symptom_id that needs to be queried
     Returns:
@@ -39,15 +39,17 @@ def select_related_diseases(symptom_id):
     related_diseases = []
     for r in query_related_diseases:
         # related_diseases.append((r.title, r.text, r.link))
-        related_diseases.append((r.title, r.text, r.link, r.summary, r.article))
+        related_diseases.append((r.title, r.text, r.link, r.is_emergency, r.thumbnail))
     return related_diseases
 
 
 def select(symptom_names=['Dizziness']):
+
+    # 1. get sypmtom_ids according to given sypmtom_names, could use reverse index
     query_symptom_ids = Symptom.select().where(Symptom.name << symptom_names)
     symptom_ids = [str(s.id) for s in query_symptom_ids]
 
-    # select related sypmtoms
+    # 2. select related sypmtoms
     ret_symptoms = select_related_symptoms(symptom_ids)
 
     all_related_diseases = []
@@ -55,10 +57,11 @@ def select(symptom_names=['Dizziness']):
         related_diseases = select_related_diseases(symptom_id)
         all_related_diseases.append(related_diseases)
 
-    # get the intersection of given diseases
+    # 3. get the intersection of given diseases
     ret_diseases = set(all_related_diseases[0])
     for s in all_related_diseases[1:]:
         ret_diseases = ret_diseases.intersection(s)
+    ret_diseases = list(ret_diseases)
     return ret_symptoms, ret_diseases
 
 
