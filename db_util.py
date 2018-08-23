@@ -13,10 +13,12 @@ class BaseModel(Model):
 
 class Symptom(BaseModel):
     name = CharField(unique=True)
+    summary = TextField()
+    article = TextField(null=True)
 
 
 class RelatedSymptom(BaseModel):
-    main_symptom_id = ForeignKeyField(Symptom, backref='main_symtom')
+    main_symptom_id = CharField()
     related_symptom_id = ForeignKeyField(Symptom, backref='related_symptom')
     rank = IntegerField()
 
@@ -28,6 +30,10 @@ class RelatedSymptom(BaseModel):
 
 class Disease(BaseModel):
     title = CharField(unique=True)
+    text = CharField()
+    link = CharField()
+    is_emergency = IntegerField()
+    thumbnail = CharField()
 
 
 class RelatedDisease(BaseModel):
